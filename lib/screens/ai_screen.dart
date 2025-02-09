@@ -62,7 +62,7 @@ class _AiScreenState extends State<AiScreen> {
     try {
       //TODO - Google Gemini API Key - https://aistudio.google.com/app/apikey
 
-      const apiKey = '';
+      const apiKey = 'AIzaSyBXZLw-FPP5s8fJ83hEjHqKA_qd5gNPXUo';
 
       log('api key: $apiKey');
 
@@ -71,7 +71,7 @@ class _AiScreenState extends State<AiScreen> {
       }
 
       final model = GenerativeModel(
-        model: 'gemini-1.5-flash-latest',
+        model: 'gemini-pro',
         apiKey: apiKey,
       );
 

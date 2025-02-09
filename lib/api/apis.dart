@@ -185,29 +185,33 @@ class APIs {
   }
 
   // for getting all users from firestore database
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers(
-      List<String> userIds) {
-    log('\nUserIds: $userIds');
-
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers() {
     return firestore
         .collection('users')
-        .where('id',
-            whereIn: userIds.isEmpty
-                ? ['']
-                : userIds) //because empty list throws an error
-        // .where('id', isNotEqualTo: user.uid)
+        .where('id', isNotEqualTo: user.uid)
         .snapshots();
   }
 
-  // for adding an user to my user when first message is send
+  // add users to each other's contacts when first message is sent
   static Future<void> sendFirstMessage(
       ChatUser chatUser, String msg, Type type) async {
+    // Add the other user to current user's contacts
+    await firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('my_users')
+        .doc(chatUser.id)
+        .set({});
+
+    // Add current user to other user's contacts
     await firestore
         .collection('users')
         .doc(chatUser.id)
         .collection('my_users')
         .doc(user.uid)
-        .set({}).then((value) => sendMessage(chatUser, msg, type));
+        .set({});
+
+    await sendMessage(chatUser, msg, type);
   }
 
   // for updating user information

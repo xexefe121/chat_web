@@ -14,11 +14,14 @@ late Size mq;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   //enter full-screen
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
-  await _initializeFirebase();
+  // await _initializeFirebase();
 
   //for setting orientation to portrait only
   SystemChrome.setPreferredOrientations(
@@ -52,14 +55,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-Future<void> _initializeFirebase() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+// Future<void> _initializeFirebase() async {
+//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  var result = await FlutterNotificationChannel().registerNotificationChannel(
-      description: 'For Showing Message Notification',
-      id: 'chats',
-      importance: NotificationImportance.IMPORTANCE_HIGH,
-      name: 'Chats');
+//   var result = await FlutterNotificationChannel().registerNotificationChannel(
+//       description: 'For Showing Message Notification',
+//       id: 'chats',
+//       importance: NotificationImportance.IMPORTANCE_HIGH,
+//       name: 'Chats');
 
-  log('\nNotification Channel Result: $result');
-}
+//   log('\nNotification Channel Result: $result');
+// }

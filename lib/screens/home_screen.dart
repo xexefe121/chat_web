@@ -134,13 +134,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icon(_isSearching
                       ? CupertinoIcons.clear_circled_solid
                       : CupertinoIcons.search)),
-
-              //add new user
-              IconButton(
-                  tooltip: 'Add User',
-                  padding: const EdgeInsets.only(right: 8),
-                  onPressed: _addChatUserDialog,
-                  icon: const Icon(CupertinoIcons.person_add, size: 25))
             ],
           ),
 
@@ -158,9 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           //body
           body: StreamBuilder(
-            stream: APIs.getMyUsersId(),
-
-            //get id of only known users
+            stream: APIs.getAllUsers(),
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 //if data is loading
@@ -171,50 +162,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 //if some or all data is loaded then show it
                 case ConnectionState.active:
                 case ConnectionState.done:
-                  return StreamBuilder(
-                    stream: APIs.getAllUsers(
-                        snapshot.data?.docs.map((e) => e.id).toList() ?? []),
+                  final data = snapshot.data?.docs;
+                  _list =
+                      data?.map((e) => ChatUser.fromJson(e.data())).toList() ??
+                          [];
 
-                    //get only those user, who's ids are provided
-                    builder: (context, snapshot) {
-                      switch (snapshot.connectionState) {
-                        //if data is loading
-                        case ConnectionState.waiting:
-                        case ConnectionState.none:
-                        // return const Center(
-                        //     child: CircularProgressIndicator());
-
-                        //if some or all data is loaded then show it
-                        case ConnectionState.active:
-                        case ConnectionState.done:
-                          final data = snapshot.data?.docs;
-                          _list = data
-                                  ?.map((e) => ChatUser.fromJson(e.data()))
-                                  .toList() ??
-                              [];
-
-                          if (_list.isNotEmpty) {
-                            return ListView.builder(
-                                itemCount: _isSearching
-                                    ? _searchList.length
-                                    : _list.length,
-                                padding: EdgeInsets.only(top: mq.height * .01),
-                                physics: const BouncingScrollPhysics(),
-                                itemBuilder: (context, index) {
-                                  return ChatUserCard(
-                                      user: _isSearching
-                                          ? _searchList[index]
-                                          : _list[index]);
-                                });
-                          } else {
-                            return const Center(
-                              child: Text('No Connections Found!',
-                                  style: TextStyle(fontSize: 20)),
-                            );
-                          }
-                      }
-                    },
-                  );
+                  if (_list.isNotEmpty) {
+                    return ListView.builder(
+                        itemCount:
+                            _isSearching ? _searchList.length : _list.length,
+                        padding: EdgeInsets.only(top: mq.height * .01),
+                        physics: const BouncingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return ChatUserCard(
+                              user: _isSearching
+                                  ? _searchList[index]
+                                  : _list[index]);
+                        });
+                  } else {
+                    return const Center(
+                      child: Text('No Users Found!',
+                          style: TextStyle(fontSize: 20)),
+                    );
+                  }
               }
             },
           ),
